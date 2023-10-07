@@ -21,6 +21,7 @@ public class CategoryDTO {
     private String name;
 
     private String description;
+    private Integer userId;
 
     private List<ProductDTO> products = new ArrayList<>();
     public CategoryDTO(Category category) {

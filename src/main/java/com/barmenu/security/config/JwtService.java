@@ -1,5 +1,6 @@
 package com.barmenu.security.config;
 
+import com.barmenu.security.auth.AuthenticationResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -27,7 +28,7 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public AuthenticationResponse generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
 
@@ -43,15 +44,18 @@ public class JwtService {
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return Jwts
+
+    public AuthenticationResponse generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        var expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
+        var token = Jwts
                 .builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
+                .setExpiration(expiration)
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
+        return new AuthenticationResponse(token, userDetails.getUsername(), expiration.toInstant().toEpochMilli());
     }
 
     private Claims extractAllClaims(String token) {

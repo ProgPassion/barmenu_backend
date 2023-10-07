@@ -12,8 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductDTO {
-
+public class EditProductDTO {
     private Integer id;
     @NotBlank(message = "Name is not defined")
     private String name;
@@ -21,7 +20,9 @@ public class ProductDTO {
     @NotNull(message = "Price is not defined")
     private Float price;
 
-    public ProductDTO(Product product) {
+    private String categoryName;
+
+    public EditProductDTO(Product product) {
         this.id = product.getId();
         this.name = product.getName();
         this.description = product.getDescription();

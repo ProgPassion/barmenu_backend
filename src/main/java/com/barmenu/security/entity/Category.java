@@ -1,6 +1,7 @@
 package com.barmenu.security.entity;
 
 
+import com.barmenu.security.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,11 +20,14 @@ import java.util.Set;
 @Table(name = "category")
 public class Category {
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(unique = true)
     private String name;
     private String description;
 

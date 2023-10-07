@@ -1,4 +1,4 @@
-package com.barmenu.security.category;
+package com.barmenu.security.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
