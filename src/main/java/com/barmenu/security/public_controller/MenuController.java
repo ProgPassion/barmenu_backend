@@ -22,9 +22,8 @@ public class MenuController {
     private final ProductService service;
 
     @GetMapping("{url}")
-    public ResponseEntity<List<CategoryByUserUrlDTO>> getByUserUrl(@PathVariable String url, Authentication auth) throws UrlNotFoundException {
-        var details = (User) auth.getPrincipal();
-        var products = service.getProductsByUserUrl(url, details.getId());
+    public ResponseEntity<List<CategoryByUserUrlDTO>> getByUserUrl(@PathVariable String url) throws UrlNotFoundException {
+        var products = service.getProductsByUserUrl(url);
         return ResponseEntity.ok(products);
     }
 }

@@ -51,6 +51,13 @@ public class CategoryService {
                 .toList();
     }
 
+    public List<CategoryDTO> getCategories(String url) {
+        List<Category> categories = repo.findAllByUser_Url(url);
+        return categories.stream()
+                .map(CategoryDTO::new)
+                .toList();
+    }
+
     public CategoryDTO editCategory(CategoryDTO dto) throws CategoryNameExistsException, CategoryIdDoesntExistsException, DefaultCategoryException {
         if(repo.getFirstCategoryId(dto.getUserId()).equals(dto.getId())) {
             throw new DefaultCategoryException();

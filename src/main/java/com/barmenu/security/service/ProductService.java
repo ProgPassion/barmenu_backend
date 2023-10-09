@@ -96,7 +96,7 @@ public class ProductService {
         return categoryDTOsArrayList;
     }
 
-    public List<CategoryByUserUrlDTO> getProductsByUserUrl(String url, Integer userId) throws UrlNotFoundException {
+    public List<CategoryByUserUrlDTO> getProductsByUserUrl(String url) throws UrlNotFoundException {
         if(!userRepo.findByUrl(url).isPresent()) {
             throw new UrlNotFoundException();
         }
@@ -104,7 +104,7 @@ public class ProductService {
         Map<Category, List<Product>> categoryProductMap = products.stream()
                 .collect(Collectors.groupingBy(Product::getCategory));
 
-        var categories = categoryService.getCategories(userId);
+        var categories = categoryService.getCategories(url);
 
         CategoryByUserUrlDTO[] categoryDTOsArray = new CategoryByUserUrlDTO[categories.size()];
 

@@ -13,6 +13,8 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
     Category getCategoriesById(Integer id);
     List<Category> findAllByUser_Id(Integer userId);
 
+    List<Category> findAllByUser_Url(String url);
+
     //Check whether the name the user is trying to use is used somewhere else in his category
     //list
     @Query("SELECT COUNT(c) FROM Category c WHERE c.name = ?1 and c.user.id = ?2 and c.id <> ?3")
