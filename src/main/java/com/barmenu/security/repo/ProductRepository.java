@@ -52,7 +52,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("SELECT p FROM Product p " +
             "JOIN FETCH p.category c " +
             "JOIN c.user u " +
-            "WHERE u.id = :userId ")
+            "WHERE u.id = :userId " +
+            "ORDER BY c.rank")
     List<Product> findProductsByUserId(
             @Param("userId") Integer userId
     );
@@ -68,7 +69,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("SELECT p FROM Product p " +
             "JOIN FETCH p.category c " +
             "JOIN c.user u " +
-            "WHERE u.url = :userUrl")
+            "WHERE u.url = :userUrl " +
+            "ORDER BY c.rank")
     List<Product> findProductsByUserUrl(
             @Param("userUrl") String userUrl
     );

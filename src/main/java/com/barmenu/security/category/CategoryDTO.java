@@ -19,14 +19,14 @@ public class CategoryDTO {
     private Integer id;
     @NotBlank(message = "Name is not defined")
     private String name;
-
     private String description;
     private Integer userId;
-
+    private Integer rank;
     private List<ProductDTO> products = new ArrayList<>();
     public CategoryDTO(Category category) {
         this.id = category.getId();
         this.name = category.getName();
         this.description = category.getDescription();
+        this.rank = category.getRank();
     }
 }

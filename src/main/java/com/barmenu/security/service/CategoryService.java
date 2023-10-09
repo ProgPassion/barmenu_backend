@@ -1,6 +1,7 @@
 package com.barmenu.security.service;
 
 import com.barmenu.security.category.CategoryDTO;
+import com.barmenu.security.category.CategoryRankIdDTO;
 import com.barmenu.security.entity.Category;
 import com.barmenu.security.entity.Product;
 import com.barmenu.security.exception.category.CategoryIdDoesntExistsException;
@@ -45,14 +46,14 @@ public class CategoryService {
     }
 
     public List<CategoryDTO> getCategories(Integer userId) {
-        List<Category> categories = repo.findAllByUser_Id(userId);
+        List<Category> categories = repo.getRankedCategoriesByUserId(userId);
         return categories.stream()
                 .map(CategoryDTO::new)
                 .toList();
     }
 
     public List<CategoryDTO> getCategories(String url) {
-        List<Category> categories = repo.findAllByUser_Url(url);
+        List<Category> categories = repo.getRankedCategoriesByUserUrl(url);
         return categories.stream()
                 .map(CategoryDTO::new)
                 .toList();
@@ -82,6 +83,17 @@ public class CategoryService {
         category.setDescription(dto.getDescription());
         repo.save(category);
         return dto;
+    }
+
+    public void changeCategoryRank(List<CategoryRankIdDTO> categoryRankIdDTOList, Integer userId) throws CategoryIdDoesntExistsException {
+        for(var dto: categoryRankIdDTOList) {
+            var category = repo.getCategoriesById(dto.getId());
+            if(!category.getUser().getId().equals(userId)) {
+                throw new CategoryIdDoesntExistsException();
+            }
+            category.setRank(dto.getRank());
+            repo.save(category);
+        }
     }
 
     public void removeCategory(Integer id, Integer userId) throws CategoryIdDoesntExistsException, DefaultCategoryException {

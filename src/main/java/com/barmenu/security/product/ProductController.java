@@ -1,13 +1,10 @@
 package com.barmenu.security.product;
 
-import com.barmenu.security.category.CategoryByUserUrlDTO;
 import com.barmenu.security.category.CategoryDTO;
-import com.barmenu.security.entity.Product;
 import com.barmenu.security.exception.category.CategoryIdDoesntExistsException;
 import com.barmenu.security.exception.category.CategoryNameExistsException;
 import com.barmenu.security.exception.product.ProductNameExistsException;
 import com.barmenu.security.exception.product.ProductNotFoundException;
-import com.barmenu.security.exception.url.UrlNotFoundException;
 import com.barmenu.security.service.ProductService;
 import com.barmenu.security.user.User;
 import jakarta.validation.Valid;

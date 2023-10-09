@@ -46,6 +46,13 @@ public class CategoryController {
         return ResponseEntity.ok(category);
     }
 
+    @PutMapping("/changerank")
+    public ResponseEntity<Void> changeRank(@RequestBody List<CategoryRankIdDTO> categoryChangeRank, Authentication auth) throws CategoryIdDoesntExistsException {
+        var details = (User) auth.getPrincipal();
+        service.changeCategoryRank(categoryChangeRank, details.getId());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @DeleteMapping("/delete/id/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id, Authentication auth) throws CategoryIdDoesntExistsException, DefaultCategoryException {
         var details = (User) auth.getPrincipal();

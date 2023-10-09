@@ -14,13 +14,13 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoryByUserUrlDTO {
+public class MenuItemsDTO {
 
     private String category;
     private String description;
     private List<ProductByUserUrlDTO> items = new ArrayList<>();
 
-    public CategoryByUserUrlDTO(Category category) {
+    public MenuItemsDTO(Category category) {
         this.category = category.getName();
         this.description = category.getDescription();
     }

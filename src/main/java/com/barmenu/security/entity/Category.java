@@ -30,6 +30,7 @@ public class Category {
 
     private String name;
     private String description;
+    private Integer rank;
 
     public Category(Integer id) {
         this.id = id;

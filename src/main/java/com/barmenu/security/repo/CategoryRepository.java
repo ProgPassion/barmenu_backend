@@ -3,6 +3,7 @@ package com.barmenu.security.repo;
 import com.barmenu.security.entity.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -27,4 +28,14 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
     Category findCategoryByNameAndUserId(String name, Integer userId);
     //@Query("SELECT c FROM Category c join fetch c.products")
     //List<Category> getAll();
+
+    @Query("SELECT c FROM Category c WHERE c.user.id = :userId order by c.rank")
+    List<Category> getRankedCategoriesByUserId(
+            @Param("userId") Integer userId
+    );
+
+    @Query("SELECT c FROM Category c WHERE c.user.url = :userUrl order by c.rank")
+    List<Category> getRankedCategoriesByUserUrl(
+            @Param("userUrl") String userUrl
+    );
 }

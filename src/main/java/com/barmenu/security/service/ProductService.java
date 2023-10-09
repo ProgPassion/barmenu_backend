@@ -1,6 +1,6 @@
 package com.barmenu.security.service;
 
-import com.barmenu.security.category.CategoryByUserUrlDTO;
+import com.barmenu.security.category.MenuItemsDTO;
 import com.barmenu.security.category.CategoryDTO;
 import com.barmenu.security.entity.Category;
 import com.barmenu.security.entity.Product;
@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -31,8 +32,6 @@ public class ProductService {
     private final ProductRepository productRepo;
     private final CategoryRepository categoryRepo;
     private final UserRepository userRepo;
-
-    private final CategoryService categoryService;
 
     public CreateProductDTO addProduct(Integer userId, CreateProductDTO dto) throws ProductNameExistsException, CategoryIdDoesntExistsException {
 
@@ -55,11 +54,16 @@ public class ProductService {
 
     public List<CategoryDTO> getProducts(Integer userId) {
         List<Product> products = productRepo.findProductsByUserId(userId);
-//        return products;
+
         Map<Category, List<Product>> categoryProductMap = products.stream()
-                .collect(Collectors.groupingBy(Product::getCategory));
+                .collect(Collectors.groupingBy(
+                        Product::getCategory,
+                        LinkedHashMap::new,
+                        Collectors.toList()
+                ));
 
         List<CategoryDTO> categoryDTOs = new ArrayList<>();
+
         for(Map.Entry<Category, List<Product>> entry: categoryProductMap.entrySet()) {
             Category category = entry.getKey();
             List<Product> categoryProducts = entry.getValue();
@@ -77,36 +81,20 @@ public class ProductService {
         return categoryDTOs;
     }
 
-    private Integer findCategoryIndex(String categoryName, List<CategoryDTO> categories) {
-        for(var category : categories) {
-            if(category.getName().equals(categoryName)) {
-                return categories.indexOf(category);
-            }
-        }
-        return -1;
-    }
-
-    private List<CategoryByUserUrlDTO> convertCategoryDTOsToArrayList(CategoryByUserUrlDTO[] categoryDTOsArray) {
-        List<CategoryByUserUrlDTO> categoryDTOsArrayList = new ArrayList<>();
-        for(int i = 0; i < categoryDTOsArray.length; i++) {
-            if(categoryDTOsArray[i] != null) {
-                categoryDTOsArrayList.add(categoryDTOsArray[i]);
-            }
-        }
-        return categoryDTOsArrayList;
-    }
-
-    public List<CategoryByUserUrlDTO> getProductsByUserUrl(String url) throws UrlNotFoundException {
+    public List<MenuItemsDTO> getProductsByUserUrl(String url) throws UrlNotFoundException {
         if(!userRepo.findByUrl(url).isPresent()) {
             throw new UrlNotFoundException();
         }
         List<Product> products = productRepo.findProductsByUserUrl(url);
+
         Map<Category, List<Product>> categoryProductMap = products.stream()
-                .collect(Collectors.groupingBy(Product::getCategory));
+                .collect(Collectors.groupingBy(
+                        Product::getCategory,
+                        LinkedHashMap::new,
+                        Collectors.toList()
+                ));
 
-        var categories = categoryService.getCategories(url);
-
-        CategoryByUserUrlDTO[] categoryDTOsArray = new CategoryByUserUrlDTO[categories.size()];
+        List<MenuItemsDTO> categoryDTOs = new ArrayList<>();
 
         for(Map.Entry<Category, List<Product>> entry: categoryProductMap.entrySet()) {
             Category category = entry.getKey();
@@ -116,13 +104,12 @@ public class ProductService {
                     .stream()
                     .map(ProductByUserUrlDTO::new)
                     .toList();
-            CategoryByUserUrlDTO categoryDTO = new CategoryByUserUrlDTO(category);
+            MenuItemsDTO categoryDTO = new MenuItemsDTO(category);
             categoryDTO.setItems(productDTOs);
-            var categoryIndex = findCategoryIndex(category.getName(), categories);
-            categoryDTOsArray[categoryIndex] = categoryDTO;
+            categoryDTOs.add(categoryDTO);
         }
 
-        return convertCategoryDTOsToArrayList(categoryDTOsArray);
+        return categoryDTOs;
     }
 
     public List<ProductDTO> getProductsByCategory(String categoryName, Integer userId) throws CategoryNameExistsException {
