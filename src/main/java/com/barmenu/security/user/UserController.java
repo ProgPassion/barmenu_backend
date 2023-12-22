@@ -29,4 +29,18 @@ public class UserController {
         UrlDTO responseDto = userService.setUserUrl(userDetails.getId(), dto);
         return ResponseEntity.ok(responseDto);
     }
+
+    @GetMapping("/getbusinessname")
+    public ResponseEntity<String> getBusinessName(Authentication auth) {
+        var userDetails = (User) auth.getPrincipal();
+        String businessName = userService.getBusinessName(userDetails.getId());
+        return ResponseEntity.ok(businessName);
+    }
+
+    @PutMapping("/setbusinessname")
+    public ResponseEntity<BusinessNameDTO> setBusinessName(@Valid @RequestBody BusinessNameDTO dto, Authentication auth) throws UserNotFoundException {
+        var userDetails = (User) auth.getPrincipal();
+        BusinessNameDTO responseDto = userService.setBusinessName(userDetails.getId(), dto);
+        return ResponseEntity.ok(responseDto);
+    }
 }

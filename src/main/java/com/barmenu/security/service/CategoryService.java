@@ -20,7 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CategoryService {
 
-    private final CategoryRepository repo;
+    private final CategoryRepository categoryRepo;
     private final ProductRepository productRepo;
 
     public void addDefaultCategory(User user) {
@@ -28,42 +28,45 @@ public class CategoryService {
         category.setName("Others");
         category.setDescription("Other products category");
         category.setUser(user);
-        repo.save(category);
+        category.setRank(1);
+        categoryRepo.save(category);
     }
 
     public CategoryDTO addCategory(CategoryDTO dto) throws CategoryNameExistsException {
-        if (repo.existsCategoryByNameAndUser_Id(dto.getName(), dto.getUserId())) {
+        if (categoryRepo.existsCategoryByNameAndUser_Id(dto.getName(), dto.getUserId())) {
             throw new CategoryNameExistsException();
         }
         var category = new Category();
         var user = new User();
+        var categoryRank = categoryRepo.getHighestRankNum(dto.getUserId());
         category.setName(dto.getName());
         category.setDescription(dto.getDescription());
         user.setId(dto.getUserId());
         category.setUser(user);
-        repo.save(category);
+        category.setRank(categoryRank + 1);
+        categoryRepo.save(category);
         return dto;
     }
 
     public List<CategoryDTO> getCategories(Integer userId) {
-        List<Category> categories = repo.getRankedCategoriesByUserId(userId);
+        List<Category> categories = categoryRepo.getRankedCategoriesByUserId(userId);
         return categories.stream()
                 .map(CategoryDTO::new)
                 .toList();
     }
 
     public List<CategoryDTO> getCategories(String url) {
-        List<Category> categories = repo.getRankedCategoriesByUserUrl(url);
+        List<Category> categories = categoryRepo.getRankedCategoriesByUserUrl(url);
         return categories.stream()
                 .map(CategoryDTO::new)
                 .toList();
     }
 
     public CategoryDTO editCategory(CategoryDTO dto) throws CategoryNameExistsException, CategoryIdDoesntExistsException, DefaultCategoryException {
-        if(repo.getFirstCategoryId(dto.getUserId()).equals(dto.getId())) {
+        if(categoryRepo.getFirstCategoryId(dto.getUserId()).equals(dto.getId())) {
             throw new DefaultCategoryException();
         }
-        Category category = repo.getCategoriesById(dto.getId());
+        Category category = categoryRepo.getCategoriesById(dto.getId());
 
         if(category == null) {
             throw new CategoryIdDoesntExistsException();
@@ -75,34 +78,34 @@ public class CategoryService {
         }
 
         // Check if you are updating the category with a name that already exists in db
-        if(repo.existsCategoryByNameWithDifferentId(dto.getName(), dto.getUserId(), dto.getId()) > 0) {
+        if(categoryRepo.existsCategoryByNameWithDifferentId(dto.getName(), dto.getUserId(), dto.getId()) > 0) {
             throw new CategoryNameExistsException();
         }
 
         category.setName(dto.getName());
         category.setDescription(dto.getDescription());
-        repo.save(category);
+        categoryRepo.save(category);
         return dto;
     }
 
     public void changeCategoryRank(List<CategoryRankIdDTO> categoryRankIdDTOList, Integer userId) throws CategoryIdDoesntExistsException {
         for(var dto: categoryRankIdDTOList) {
-            var category = repo.getCategoriesById(dto.getId());
+            var category = categoryRepo.getCategoriesById(dto.getId());
             if(!category.getUser().getId().equals(userId)) {
                 throw new CategoryIdDoesntExistsException();
             }
             category.setRank(dto.getRank());
-            repo.save(category);
+            categoryRepo.save(category);
         }
     }
 
     public void removeCategory(Integer id, Integer userId) throws CategoryIdDoesntExistsException, DefaultCategoryException {
-        Integer defaultCategoryId = repo.getFirstCategoryId(userId);
+        Integer defaultCategoryId = categoryRepo.getFirstCategoryId(userId);
         if(defaultCategoryId == id) {
             throw new DefaultCategoryException();
         }
 
-        Category category = repo.getCategoriesById(id);
+        Category category = categoryRepo.getCategoriesById(id);
         if(category == null) {
             throw new CategoryIdDoesntExistsException();
         }
@@ -120,6 +123,6 @@ public class CategoryService {
             product.setCategory(defaultCategory);
             productRepo.save(product);
         }
-        repo.deleteById(id);
+        categoryRepo.deleteById(id);
     }
 }

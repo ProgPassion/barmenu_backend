@@ -29,6 +29,7 @@ public class User implements UserDetails {
     private String email;
     private String password;
     private String url;
+    private String business_name = "Bar & Restorant";
     @Enumerated(EnumType.STRING)
     private Role role;
 

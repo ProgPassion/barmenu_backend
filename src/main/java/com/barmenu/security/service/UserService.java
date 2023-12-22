@@ -4,6 +4,7 @@ import com.barmenu.security.exception.product.ProductNotFoundException;
 import com.barmenu.security.exception.url.UrlExistsException;
 import com.barmenu.security.exception.user.UserNotFoundException;
 import com.barmenu.security.repo.UserRepository;
+import com.barmenu.security.user.BusinessNameDTO;
 import com.barmenu.security.user.UrlDTO;
 import com.barmenu.security.user.User;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class UserService {
     public String getUserUrl(Integer userId) {
         return userRepo.findUrlByUserId(userId);
     }
-
+    public String getBusinessName(Integer userId) { return userRepo.findBusinessNameByUserId(userId); }
     public UrlDTO setUserUrl(Integer userId, UrlDTO dto) throws UrlExistsException, UserNotFoundException {
         if(userRepo.existsUserUrlWithDifferentId(userId, dto.getUrl()) > 0) {
             throw new UrlExistsException();
@@ -29,6 +30,14 @@ public class UserService {
                 .orElseThrow(UserNotFoundException::new);
 
         user.setUrl(dto.getUrl());
+        userRepo.save(user);
+        return dto;
+    }
+
+    public BusinessNameDTO setBusinessName(Integer userId, BusinessNameDTO dto) throws UserNotFoundException {
+        var user = userRepo.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+        user.setBusiness_name(dto.getName());
         userRepo.save(user);
         return dto;
     }

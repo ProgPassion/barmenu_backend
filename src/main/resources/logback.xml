@@ -1,0 +1,40 @@
+<configuration debug="false">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="DEBUG">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+    <appender name="TIME_BASED_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/var/log/barmenu/api-.log</file>
+        <append>true</append>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>/var/log/barmenu/api-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxHistory>120</maxHistory>
+            <maxFileSize>1MB</maxFileSize>
+            <totalSizeCap>150MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--log everything in warn level and above-->
+    <root level="WARN">
+        <appender-ref ref="TIME_BASED_FILE"/>
+    </root>
+
+    <!--for project classes, log trace level and above-->
+    <logger name="com.barmenu.security" level="trace" additivity="false">
+        <appender-ref ref="TIME_BASED_FILE"/>
+    </logger>
+
+</configuration>

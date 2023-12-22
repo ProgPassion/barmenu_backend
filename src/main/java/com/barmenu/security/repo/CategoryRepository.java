@@ -38,4 +38,9 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
     List<Category> getRankedCategoriesByUserUrl(
             @Param("userUrl") String userUrl
     );
+
+    @Query("SELECT MAX(c.rank) FROM Category c WHERE c.user.id = :userId")
+    Integer getHighestRankNum(
+            @Param("userId") Integer userId
+    );
 }

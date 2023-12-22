@@ -16,6 +16,16 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             @Param("userId") Integer userId
     );
 
+    @Query("SELECT u.business_name FROM User u WHERE u.id = :userId")
+    String findBusinessNameByUserId(
+            @Param("userId") Integer userId
+    );
+
+    @Query("SELECT u.business_name FROM User u WHERE u.url = :userUrl")
+    String findBusinessNameByUrl(
+            @Param("userUrl") String userUrl
+    );
+
     @Query("SELECT COUNT(u) FROM User u WHERE u.id <> :userId " +
             "AND u.url = :userUrl")
     Integer existsUserUrlWithDifferentId(

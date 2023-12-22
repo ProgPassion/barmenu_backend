@@ -1,5 +1,6 @@
 package com.barmenu.security.public_controller;
 
+import com.barmenu.security.category.MenuCompleteDTO;
 import com.barmenu.security.category.MenuItemsDTO;
 import com.barmenu.security.exception.url.UrlNotFoundException;
 import com.barmenu.security.service.ProductService;
@@ -20,8 +21,8 @@ public class MenuController {
     private final ProductService service;
 
     @GetMapping("{url}")
-    public ResponseEntity<List<MenuItemsDTO>> getByUserUrl(@PathVariable String url) throws UrlNotFoundException {
-        var products = service.getProductsByUserUrl(url);
+    public ResponseEntity<MenuCompleteDTO> getByUserUrl(@PathVariable String url) throws UrlNotFoundException {
+        var products = service.getMenuComplete(url);
         return ResponseEntity.ok(products);
     }
 }

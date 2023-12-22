@@ -1,5 +1,6 @@
 package com.barmenu.security.service;
 
+import com.barmenu.security.category.MenuCompleteDTO;
 import com.barmenu.security.category.MenuItemsDTO;
 import com.barmenu.security.category.CategoryDTO;
 import com.barmenu.security.entity.Category;
@@ -81,7 +82,19 @@ public class ProductService {
         return categoryDTOs;
     }
 
-    public List<MenuItemsDTO> getProductsByUserUrl(String url) throws UrlNotFoundException {
+    public MenuCompleteDTO getMenuComplete(String url) throws UrlNotFoundException {
+        String businessName = getBusinessNameByUserUrl(url);
+        List<MenuItemsDTO> menuItems = getProductsByUserUrl(url);
+        return new MenuCompleteDTO(businessName, menuItems);
+    }
+
+    private String getBusinessNameByUserUrl(String url) throws UrlNotFoundException {
+        if(!userRepo.findByUrl(url).isPresent()) {
+            throw new UrlNotFoundException();
+        }
+        return userRepo.findBusinessNameByUrl(url);
+    }
+    private List<MenuItemsDTO> getProductsByUserUrl(String url) throws UrlNotFoundException {
         if(!userRepo.findByUrl(url).isPresent()) {
             throw new UrlNotFoundException();
         }
